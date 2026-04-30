@@ -31,7 +31,6 @@
       letter-spacing:8px;
       font-weight:900;
       text-transform:uppercase;
-      color:#fff;
     }
 
     .container{
@@ -77,39 +76,55 @@
       font-weight:bold;
     }
 
+    /* TRENDING FLUIDO SENZA BAR */
     .row{
+      overflow:hidden;
+      width:100%;
+      position:relative;
+    }
+
+    .track{
       display:flex;
-      overflow-x:auto;
-      gap:12px;
-      padding-bottom:10px;
-      scroll-snap-type:x mandatory;
+      gap:14px;
+      width:max-content;
+      animation:scroll 18s linear infinite;
+    }
+
+    @keyframes scroll{
+      0%{transform:translateX(0)}
+      100%{transform:translateX(-50%)}
     }
 
     .card{
-      min-width:160px;
+      min-width:240px;
       background:#111;
       border:1px solid #222;
-      border-radius:10px;
+      border-radius:12px;
       overflow:hidden;
       flex:0 0 auto;
-      scroll-snap-align:start;
       transition:0.3s;
     }
 
-    .card:hover{ transform:scale(1.08); }
+    .card:hover{ transform:scale(1.06); }
 
     .card img{
       width:100%;
-      height:220px;
+      height:320px;
       object-fit:cover;
     }
 
     .card p{
       margin:0;
-      padding:8px;
-      font-size:13px;
+      padding:10px;
       text-align:center;
     }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+      gap:15px;
+    }
+
   </style>
 </head>
 <body>
@@ -121,7 +136,7 @@
 <div class="container">
 
   <div class="panel">
-    <h2>Personalizza i tuoi gusti</h2>
+    <h2>I tuoi gusti</h2>
     <input id="mood" placeholder="Mood (oscuro, epico, leggero)">
     <input id="genre" placeholder="Genere (azione, fantasy, thriller)">
     <input id="style" placeholder="Stile (manga, comics)">
@@ -129,29 +144,30 @@
   </div>
 
   <div class="row-title">🔥 Consigli per te</div>
-  <div id="results" class="row"></div>
+  <div id="results" class="grid"></div>
 
   <div class="row-title">🌍 Manga & Comics più famosi</div>
-  <div id="trend" class="row"></div>
+  <div class="row">
+    <div class="track" id="trend"></div>
+  </div>
 
 </div>
 
 <script>
-
 const db = [
-  {t:"One Piece",img:"https://cdn.myanimelist.net/images/manga/2/253146.jpg",m:"epico",g:"azione"},
-  {t:"Naruto",img:"https://cdn.myanimelist.net/images/manga/3/249658.jpg",m:"epico",g:"azione"},
-  {t:"Attack on Titan",img:"https://cdn.myanimelist.net/images/manga/2/37846.jpg",m:"oscuro",g:"azione"},
-  {t:"Berserk",img:"https://cdn.myanimelist.net/images/manga/1/157897.jpg",m:"oscuro",g:"fantasy"},
-  {t:"Death Note",img:"https://cdn.myanimelist.net/images/manga/2/153541.jpg",m:"psicologico",g:"thriller"},
-  {t:"Chainsaw Man",img:"https://cdn.myanimelist.net/images/manga/3/216464.jpg",m:"caos",g:"azione"},
-  {t:"Jujutsu Kaisen",img:"https://cdn.myanimelist.net/images/manga/3/216292.jpg",m:"oscuro",g:"azione"},
-  {t:"Spy x Family",img:"https://cdn.myanimelist.net/images/manga/3/188896.jpg",m:"leggero",g:"azione"},
-  {t:"Vinland Saga",img:"https://cdn.myanimelist.net/images/manga/2/159492.jpg",m:"drammatico",g:"azione"},
-  {t:"Vagabond",img:"https://cdn.myanimelist.net/images/manga/1/259070.jpg",m:"realistico",g:"azione"},
-  {t:"Solo Leveling",img:"https://cdn.myanimelist.net/images/manga/3/222295.jpg",m:"epico",g:"fantasy"},
-  {t:"Batman",img:"https://upload.wikimedia.org/wikipedia/en/1/17/Batman_Comic_Book.jpg",m:"oscuro",g:"azione"},
-  {t:"Spider-Man",img:"https://upload.wikimedia.org/wikipedia/en/0/0c/Spider-Man_%282002_film%29_poster.jpg",m:"eroe",g:"azione"}
+  {t:"One Piece",img:"https://cdn.myanimelist.net/images/manga/2/253146.jpg"},
+  {t:"Naruto",img:"https://cdn.myanimelist.net/images/manga/3/249658.jpg"},
+  {t:"Attack on Titan",img:"https://cdn.myanimelist.net/images/manga/2/37846.jpg"},
+  {t:"Berserk",img:"https://cdn.myanimelist.net/images/manga/1/157897.jpg"},
+  {t:"Death Note",img:"https://cdn.myanimelist.net/images/manga/2/153541.jpg"},
+  {t:"Chainsaw Man",img:"https://cdn.myanimelist.net/images/manga/3/216464.jpg"},
+  {t:"Jujutsu Kaisen",img:"https://cdn.myanimelist.net/images/manga/3/216292.jpg"},
+  {t:"Spy x Family",img:"https://cdn.myanimelist.net/images/manga/3/188896.jpg"},
+  {t:"Vinland Saga",img:"https://cdn.myanimelist.net/images/manga/2/159492.jpg"},
+  {t:"Vagabond",img:"https://cdn.myanimelist.net/images/manga/1/259070.jpg"},
+  {t:"Solo Leveling",img:"https://cdn.myanimelist.net/images/manga/3/222295.jpg"},
+  {t:"Batman",img:"https://upload.wikimedia.org/wikipedia/en/1/17/Batman_Comic_Book.jpg"},
+  {t:"Spider-Man",img:"https://upload.wikimedia.org/wikipedia/en/0/0c/Spider-Man_%282002_film%29_poster.jpg"}
 ];
 
 function card(item){
@@ -162,22 +178,21 @@ function generate(){
   const mood=document.getElementById("mood").value.toLowerCase();
   const genre=document.getElementById("genre").value.toLowerCase();
 
-  const res=db.filter(x=>(!mood||x.m.includes(mood))&&(!genre||x.g.includes(genre)));
+  const res=db.filter(x=>(!mood||x.t.toLowerCase().includes(mood)));
 
-  document.getElementById("results").innerHTML=res.map(card).join("");
+  document.getElementById("results").innerHTML=res.slice(0,8).map(card).join("");
 }
 
 function loadTrending(){
-  const shuffled=[...db].sort(()=>Math.random()-0.5);
-  document.getElementById("trend").innerHTML=shuffled.map(card).join("");
+  const shuffled=[...db].sort(()=>Math.random()-0.5).slice(0,5);
+  const loop=[...shuffled,...shuffled];
+
+  document.getElementById("trend").innerHTML=loop.map(card).join("");
 }
 
-// DINAMICO (MOVING RANDOM EVERY 3s)
 loadTrending();
-setInterval(loadTrending,3000);
-
+setInterval(loadTrending,4000);
 </script>
 
 </body>
 </html>
-
