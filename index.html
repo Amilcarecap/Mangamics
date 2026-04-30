@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mangamics</title>
+  <title>MANGAMICS</title>
 
   <style>
     body{
       margin:0;
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       background:#000;
       color:#fff;
       overflow-x:hidden;
     }
 
-    /* HEADER LOGO SCI-FI */
+    /* HEADER NETFLIX STYLE */
     header{
       display:flex;
       justify-content:center;
       align-items:center;
-      padding:25px;
+      padding:22px;
       border-bottom:1px solid #111;
       position:sticky;
       top:0;
@@ -28,29 +28,11 @@
     }
 
     .logo{
-      font-size:32px;
-      letter-spacing:6px;
-      font-weight:bold;
+      font-size:30px;
+      letter-spacing:8px;
+      font-weight:900;
       text-transform:uppercase;
       color:#fff;
-      position:relative;
-      text-shadow:0 0 10px rgba(255,255,255,0.3), 0 0 20px rgba(255,255,255,0.1);
-    }
-
-    .logo::after{
-      content:"";
-      position:absolute;
-      left:0;
-      bottom:-6px;
-      width:100%;
-      height:2px;
-      background:linear-gradient(90deg,transparent,#fff,transparent);
-      animation:scan 2s linear infinite;
-    }
-
-    @keyframes scan{
-      0%{transform:translateX(-100%)}
-      100%{transform:translateX(100%)}
     }
 
     .container{
@@ -59,14 +41,13 @@
       margin:auto;
     }
 
-    /* INPUT STYLE FUTURISTIC */
+    /* INPUT PANEL NETFLIX STYLE */
     .panel{
+      background:#0b0b0b;
       border:1px solid #222;
-      background:#050505;
       padding:20px;
       border-radius:14px;
       margin-bottom:25px;
-      box-shadow:0 0 20px rgba(255,255,255,0.05);
     }
 
     input{
@@ -75,60 +56,50 @@
       margin:8px 0;
       border-radius:10px;
       border:1px solid #222;
-      background:#0a0a0a;
+      background:#111;
       color:#fff;
-      outline:none;
-      transition:0.3s;
-    }
-
-    input:focus{
-      border-color:#fff;
-      box-shadow:0 0 10px rgba(255,255,255,0.2);
     }
 
     button{
       width:100%;
       padding:14px;
-      border-radius:10px;
       border:none;
+      border-radius:10px;
       background:#fff;
       color:#000;
       font-weight:bold;
       cursor:pointer;
-      margin-top:10px;
     }
 
     button:hover{opacity:0.85;}
 
-    /* CAROUSEL ANIMATO */
-    .marquee{
-      display:flex;
-      gap:15px;
-      animation:scroll 25s linear infinite;
-      width:max-content;
-    }
-
-    @keyframes scroll{
-      0%{transform:translateX(0)}
-      100%{transform:translateX(-50%)}
+    /* ROW STYLE NETFLIX */
+    .row-title{
+      margin:18px 0 10px;
+      font-size:18px;
+      font-weight:bold;
     }
 
     .row{
-      overflow:hidden;
-      white-space:nowrap;
-      border-top:1px solid #111;
-      border-bottom:1px solid #111;
-      padding:10px 0;
+      display:flex;
+      overflow-x:auto;
+      gap:12px;
+      padding-bottom:10px;
+      scroll-snap-type:x mandatory;
     }
 
     .card{
       min-width:160px;
-      background:#0d0d0d;
+      background:#111;
       border:1px solid #222;
       border-radius:10px;
       overflow:hidden;
       flex:0 0 auto;
+      scroll-snap-align:start;
+      transition:0.3s;
     }
+
+    .card:hover{ transform:scale(1.08); }
 
     .card img{
       width:100%;
@@ -141,14 +112,6 @@
       padding:8px;
       font-size:13px;
       text-align:center;
-    }
-
-    /* GRID RISULTATI */
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-      gap:15px;
-      margin-top:20px;
     }
 
   </style>
@@ -169,26 +132,43 @@
     <button onclick="generate()">Genera consigli</button>
   </div>
 
-  <h3>🔥 Consigli per te</h3>
-  <div id="results" class="grid"></div>
+  <div class="row-title">🔥 Consigli per te</div>
+  <div id="results" class="row"></div>
 
-  <h3>🌍 Trending globale</h3>
-  <div class="row">
-    <div class="marquee" id="trend"></div>
-  </div>
+  <div class="row-title">🌍 Anime & Manga più popolari</div>
+  <div id="animeRow" class="row"></div>
+
+  <div class="row-title">🦸 Comics occidentali</div>
+  <div id="comicsRow" class="row"></div>
 
 </div>
 
 <script>
-const db = [
+
+const anime = [
   {t:"Attack on Titan",img:"https://cdn.myanimelist.net/images/anime/10/47347.jpg",m:"oscuro",g:"azione"},
-  {t:"One Piece",img:"https://cdn.myanimelist.net/images/anime/6/73245.jpg",m:"epico",g:"azione"},
-  {t:"Berserk",img:"https://cdn.myanimelist.net/images/anime/2/33061.jpg",m:"oscuro",g:"fantasy"},
-  {t:"Death Note",img:"https://cdn.myanimelist.net/images/anime/9/9453.jpg",m:"psicologico",g:"thriller"},
-  {t:"Naruto",img:"https://cdn.myanimelist.net/images/anime/13/17405.jpg",m:"epico",g:"azione"}
+  {t:"One Piece",img:"https://cdn.myanimelist.net/images/anime/6/73245.jpg"},
+  {t:"Naruto",img:"https://cdn.myanimelist.net/images/anime/13/17405.jpg"},
+  {t:"Bleach",img:"https://cdn.myanimelist.net/images/anime/3/40451.jpg"},
+  {t:"Jujutsu Kaisen",img:"https://cdn.myanimelist.net/images/anime/1171/109222.jpg"},
+  {t:"Chainsaw Man",img:"https://cdn.myanimelist.net/images/anime/1806/126216.jpg"},
+  {t:"Demon Slayer",img:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg"},
+  {t:"Tokyo Ghoul",img:"https://cdn.myanimelist.net/images/anime/5/64449.jpg"},
+  {t:"Berserk",img:"https://cdn.myanimelist.net/images/anime/2/33061.jpg"},
+  {t:"Fullmetal Alchemist",img:"https://cdn.myanimelist.net/images/anime/1223/96541.jpg"},
+  {t:"Spy x Family",img:"https://cdn.myanimelist.net/images/anime/1441/122795.jpg"},
+  {t:"Solo Leveling",img:"https://cdn.myanimelist.net/images/anime/1768/138268.jpg"}
 ];
 
-const trending = [...db, ...db, ...db]; // duplicato per effetto infinito
+const comics = [
+  {t:"Batman",img:"https://upload.wikimedia.org/wikipedia/en/1/17/Batman_Comic_Book.jpg"},
+  {t:"Spider-Man",img:"https://upload.wikimedia.org/wikipedia/en/0/0c/Spider-Man_%282002_film%29_poster.jpg"},
+  {t:"Superman",img:"https://upload.wikimedia.org/wikipedia/en/3/35/Supermanflying.png"},
+  {t:"Watchmen",img:"https://upload.wikimedia.org/wikipedia/en/a/a7/Watchmen_first_edition_cover.jpg"},
+  {t:"The Boys",img:"https://upload.wikimedia.org/wikipedia/en/4/4c/The_Boys_%28comics%29.jpg"}
+];
+
+const db = [...anime];
 
 function card(item){
   return `<div class='card'><img src='${item.img}'><p>${item.t}</p></div>`;
@@ -198,19 +178,17 @@ function generate(){
   const mood=document.getElementById("mood").value.toLowerCase();
   const genre=document.getElementById("genre").value.toLowerCase();
 
-  const res=db.filter(x=>(!mood||x.m.includes(mood))&&(!genre||x.g.includes(genre)));
+  const res=db.filter(x=>(!mood||x.m?.includes(mood))&&(!genre||x.g?.includes(genre)));
 
-  document.getElementById("results").innerHTML=res.map(card).join("");
+  document.getElementById("results").innerHTML=res.length?res.map(card).join(""):'<p>Nessun risultato</p>';
 }
 
-function loadTrending(){
-  document.getElementById("trend").innerHTML = trending
-    .sort(()=>Math.random()-0.5)
-    .map(card)
-    .join("");
+function loadRows(){
+  document.getElementById("animeRow").innerHTML = anime.sort(()=>Math.random()-0.5).map(card).join("");
+  document.getElementById("comicsRow").innerHTML = comics.sort(()=>Math.random()-0.5).map(card).join("");
 }
 
-loadTrending();
+loadRows();
 </script>
 
 </body>
