@@ -8,39 +8,49 @@
   <style>
     body{
       margin:0;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       background:#000;
       color:#fff;
+      overflow-x:hidden;
     }
 
+    /* HEADER LOGO SCI-FI */
     header{
-      padding:18px 24px;
-      font-size:26px;
-      font-weight:bold;
-      border-bottom:1px solid #222;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:25px;
+      border-bottom:1px solid #111;
       position:sticky;
       top:0;
       background:#000;
       z-index:10;
     }
 
-    .hero{
-      height:320px;
-      background:linear-gradient(to right, #000, rgba(0,0,0,0.2)), url('https://images.unsplash.com/photo-1526401485004-2fda9f0b4f3a?auto=format&fit=crop&w=1400&q=60');
-      background-size:cover;
-      display:flex;
-      align-items:center;
-      padding:30px;
+    .logo{
+      font-size:32px;
+      letter-spacing:6px;
+      font-weight:bold;
+      text-transform:uppercase;
+      color:#fff;
+      position:relative;
+      text-shadow:0 0 10px rgba(255,255,255,0.3), 0 0 20px rgba(255,255,255,0.1);
     }
 
-    .hero h1{
-      font-size:42px;
-      margin:0;
+    .logo::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:100%;
+      height:2px;
+      background:linear-gradient(90deg,transparent,#fff,transparent);
+      animation:scan 2s linear infinite;
     }
 
-    .hero p{
-      max-width:500px;
-      color:#ccc;
+    @keyframes scan{
+      0%{transform:translateX(-100%)}
+      100%{transform:translateX(100%)}
     }
 
     .container{
@@ -49,63 +59,76 @@
       margin:auto;
     }
 
+    /* INPUT STYLE FUTURISTIC */
     .panel{
-      background:#0b0b0b;
-      padding:18px;
       border:1px solid #222;
-      border-radius:12px;
+      background:#050505;
+      padding:20px;
+      border-radius:14px;
       margin-bottom:25px;
+      box-shadow:0 0 20px rgba(255,255,255,0.05);
     }
 
     input{
       width:100%;
-      padding:12px;
-      margin:6px 0;
-      border-radius:8px;
-      border:none;
-      background:#111;
+      padding:14px;
+      margin:8px 0;
+      border-radius:10px;
+      border:1px solid #222;
+      background:#0a0a0a;
       color:#fff;
+      outline:none;
+      transition:0.3s;
+    }
+
+    input:focus{
+      border-color:#fff;
+      box-shadow:0 0 10px rgba(255,255,255,0.2);
     }
 
     button{
       width:100%;
-      padding:12px;
+      padding:14px;
+      border-radius:10px;
       border:none;
-      border-radius:8px;
       background:#fff;
       color:#000;
       font-weight:bold;
       cursor:pointer;
+      margin-top:10px;
     }
 
-    button:hover{ opacity:0.8; }
+    button:hover{opacity:0.85;}
 
-    .row-title{
-      margin:18px 0 10px;
-      font-size:18px;
-      font-weight:bold;
+    /* CAROUSEL ANIMATO */
+    .marquee{
+      display:flex;
+      gap:15px;
+      animation:scroll 25s linear infinite;
+      width:max-content;
+    }
+
+    @keyframes scroll{
+      0%{transform:translateX(0)}
+      100%{transform:translateX(-50%)}
     }
 
     .row{
-      display:flex;
-      overflow-x:auto;
-      gap:12px;
-      scroll-snap-type:x mandatory;
-      padding-bottom:10px;
+      overflow:hidden;
+      white-space:nowrap;
+      border-top:1px solid #111;
+      border-bottom:1px solid #111;
+      padding:10px 0;
     }
 
     .card{
       min-width:160px;
-      background:#111;
+      background:#0d0d0d;
+      border:1px solid #222;
       border-radius:10px;
       overflow:hidden;
-      border:1px solid #222;
       flex:0 0 auto;
-      scroll-snap-align:start;
-      transition:0.3s;
     }
-
-    .card:hover{ transform:scale(1.08); }
 
     .card img{
       width:100%;
@@ -120,79 +143,71 @@
       text-align:center;
     }
 
+    /* GRID RISULTATI */
     .grid{
       display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+      grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
       gap:15px;
+      margin-top:20px;
     }
 
-    .badge{
-      font-size:12px;
-      color:#aaa;
-    }
   </style>
 </head>
 <body>
 
-<header>mangamics</header>
-
-<div class="hero">
-  <div>
-    <h1>Trova il tuo prossimo manga</h1>
-    <p>Personalizzato sui tuoi gusti. Stile Netflix + AI recommendation.</p>
-  </div>
-</div>
+<header>
+  <div class="logo">MANGAMICS</div>
+</header>
 
 <div class="container">
 
   <div class="panel">
-    <h2>I tuoi gusti</h2>
+    <h2>Personalizza i tuoi gusti</h2>
     <input id="mood" placeholder="Mood (oscuro, epico, leggero)">
-    <input id="genre" placeholder="Genere (azione, fantasy...)">
-    <input id="style" placeholder="Stile (manga, comics)">
-    <button onclick="recommend()">Genera consigli</button>
+    <input id="genre" placeholder="Genere (azione, fantasy, romance)">
+    <input id="style" placeholder="Stile (manga, comics, graphic novel)">
+    <button onclick="generate()">Genera consigli</button>
   </div>
 
-  <div class="row-title">🔥 Consigli per te</div>
-  <div id="results" class="row"></div>
+  <h3>🔥 Consigli per te</h3>
+  <div id="results" class="grid"></div>
 
-  <div class="row-title">🌍 Trending mondiale</div>
-  <div id="popular" class="row"></div>
+  <h3>🌍 Trending globale</h3>
+  <div class="row">
+    <div class="marquee" id="trend"></div>
+  </div>
 
 </div>
 
 <script>
 const db = [
-  {t:"Attack on Titan",img:"https://via.placeholder.com/300x400?text=AOT",m:"oscuro",g:"azione"},
-  {t:"One Piece",img:"https://via.placeholder.com/300x400?text=OP",m:"epico",g:"azione"},
-  {t:"Berserk",img:"https://via.placeholder.com/300x400?text=Berserk",m:"oscuro",g:"fantasy"},
-  {t:"Death Note",img:"https://via.placeholder.com/300x400?text=DN",m:"psicologico",g:"thriller"},
-  {t:"Naruto",img:"https://via.placeholder.com/300x400?text=Naruto",m:"epico",g:"azione"}
+  {t:"Attack on Titan",img:"https://cdn.myanimelist.net/images/anime/10/47347.jpg",m:"oscuro",g:"azione"},
+  {t:"One Piece",img:"https://cdn.myanimelist.net/images/anime/6/73245.jpg",m:"epico",g:"azione"},
+  {t:"Berserk",img:"https://cdn.myanimelist.net/images/anime/2/33061.jpg",m:"oscuro",g:"fantasy"},
+  {t:"Death Note",img:"https://cdn.myanimelist.net/images/anime/9/9453.jpg",m:"psicologico",g:"thriller"},
+  {t:"Naruto",img:"https://cdn.myanimelist.net/images/anime/13/17405.jpg",m:"epico",g:"azione"}
 ];
 
-const trending = ["Dragon Ball","One Piece","Naruto","Bleach","Jujutsu Kaisen","Chainsaw Man","Tokyo Ghoul","Berserk"];
+const trending = [...db, ...db, ...db]; // duplicato per effetto infinito
 
 function card(item){
   return `<div class='card'><img src='${item.img}'><p>${item.t}</p></div>`;
 }
 
-function recommend(){
+function generate(){
   const mood=document.getElementById("mood").value.toLowerCase();
   const genre=document.getElementById("genre").value.toLowerCase();
 
-  let res = db.filter(x=>
-    (!mood || x.m.includes(mood)) &&
-    (!genre || x.g.includes(genre))
-  );
+  const res=db.filter(x=>(!mood||x.m.includes(mood))&&(!genre||x.g.includes(genre)));
 
-  document.getElementById("results").innerHTML = res.length ? res.map(card).join("") : "<p class='badge'>Nessun risultato preciso, prova a cambiare i gusti</p>";
+  document.getElementById("results").innerHTML=res.map(card).join("");
 }
 
 function loadTrending(){
-  let mix=[...trending].sort(()=>Math.random()-0.5);
-  document.getElementById("popular").innerHTML = mix.map(n=>
-    `<div class='card'><img src='https://via.placeholder.com/300x400?text=${encodeURIComponent(n)}'><p>${n}</p></div>`
-  ).join("");
+  document.getElementById("trend").innerHTML = trending
+    .sort(()=>Math.random()-0.5)
+    .map(card)
+    .join("");
 }
 
 loadTrending();
