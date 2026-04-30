@@ -1,216 +1,239 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MANGAMICS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MANGAMICS</title>
 
-  <style>
-    body{
-      margin:0;
-      font-family: Arial, sans-serif;
-      background:#000;
-      color:#fff;
-      overflow-x:hidden;
-    }
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#000;
+  color:#fff;
+}
 
-    header{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:22px;
-      border-bottom:1px solid #111;
-      position:sticky;
-      top:0;
-      background:#000;
-      z-index:10;
-    }
+header{
+  display:flex;
+  justify-content:center;
+  padding:20px;
+  border-bottom:1px solid #111;
+  position:sticky;
+  top:0;
+  background:#000;
+}
 
-    .logo{
-      font-size:30px;
-      letter-spacing:10px;
-      font-weight:900;
-      text-transform:uppercase;
-      text-shadow:0 0 10px rgba(255,255,255,0.15);
-    }
+.logo{
+  font-size:28px;
+  letter-spacing:8px;
+  font-weight:900;
+}
 
-    .container{
-      padding:20px;
-      max-width:1200px;
-      margin:auto;
-    }
+.container{
+  padding:20px;
+  max-width:1200px;
+  margin:auto;
+}
 
-    .panel{
-      background:#0b0b0b;
-      border:1px solid #222;
-      padding:20px;
-      border-radius:14px;
-      margin-bottom:25px;
-    }
+.panel{
+  background:#0b0b0b;
+  border:1px solid #222;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+}
 
-    input{
-      width:100%;
-      padding:14px;
-      margin:8px 0;
-      border-radius:10px;
-      border:1px solid #222;
-      background:#111;
-      color:#fff;
-    }
+input{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border-radius:8px;
+  border:1px solid #222;
+  background:#111;
+  color:#fff;
+}
 
-    button{
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:10px;
-      background:#fff;
-      color:#000;
-      font-weight:bold;
-      cursor:pointer;
-    }
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#fff;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    button:hover{opacity:0.85;}
+.row-title{
+  margin:20px 0 10px;
+  font-weight:bold;
+}
 
-    .row-title{
-      margin:18px 0 10px;
-      font-size:18px;
-      font-weight:bold;
-    }
+.row{
+  overflow:hidden;
+}
 
-    .row{
-      overflow:hidden;
-      width:100%;
-      position:relative;
-    }
+.track{
+  display:flex;
+  gap:14px;
+  animation:scroll 20s linear infinite;
+}
 
-    .track{
-      display:flex;
-      gap:14px;
-      width:max-content;
-      animation:scroll 18s linear infinite;
-    }
+@keyframes scroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
 
-    @keyframes scroll{
-      0%{transform:translateX(0)}
-      100%{transform:translateX(-50%)}
-    }
+.card{
+  min-width:200px;
+  background:#111;
+  border:1px solid #222;
+  border-radius:10px;
+  overflow:hidden;
+  transition:0.3s;
+}
 
-    .card{
-      min-width:240px;
-      background:#111;
-      border:1px solid #222;
-      border-radius:12px;
-      overflow:hidden;
-      flex:0 0 auto;
-      transition:0.3s;
-    }
+.card:hover{
+  transform:scale(1.05);
+}
 
-    .card:hover{transform:scale(1.06);}
+.card img{
+  width:100%;
+  height:280px;
+  object-fit:cover;
+}
 
-    .card img{
-      width:100%;
-      height:320px;
-      object-fit:cover;
-    }
+.card p{
+  text-align:center;
+  padding:8px;
+}
 
-    .card p{
-      margin:0;
-      padding:10px;
-      text-align:center;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-      gap:15px;
-    }
-
-  </style>
+.card small{
+  display:block;
+  text-align:center;
+  opacity:0.6;
+  padding-bottom:10px;
+}
+</style>
 </head>
+
 <body>
 
 <header>
-  <div class="logo">MANGAMICS</div>
+<div class="logo">MANGAMICS</div>
 </header>
 
 <div class="container">
 
-  <div class="panel">
-    <h2>🎯 AI Mood Engine</h2>
-    <input id="mood" placeholder="Mood (oscuro, epico, leggero, psicologico)">
-    <input id="genre" placeholder="Genere (azione, fantasy, thriller)">
-    <input id="style" placeholder="Stile (manga, comics)">
-    <button onclick="generateAI()">Genera consigli AI</button>
-  </div>
+<div class="panel">
+<h2>🎯 AI Comic Finder</h2>
 
-  <div class="row-title">🏆 Ultimate Best Works</div>
-  <div class="row">
-    <div class="track" id="best"></div>
-  </div>
+<input id="mood" placeholder="Mood (oscuro, epico, leggero, psicologico)" oninput="generateAI()">
+<input id="genre" placeholder="Genere (azione, fantasy, thriller)" oninput="generateAI()">
+<input id="style" placeholder="Stile (manga, comics)" oninput="generateAI()">
 
-  <div class="row-title">🌍 Live Trending Universe</div>
-  <div class="row">
-    <div class="track" id="trend"></div>
-  </div>
+<button onclick="generateAI()">Genera consigli</button>
+</div>
+
+<div class="row-title">🏆 Best Picks</div>
+<div class="row">
+<div class="track" id="best"></div>
+</div>
+
+<div class="row-title">🔍 Risultati AI</div>
+<div class="row">
+<div class="track" id="results"></div>
+</div>
 
 </div>
 
 <script>
 
+// DATABASE
 const db = [
-  {t:"One Piece",img:"https://cdn.myanimelist.net/images/manga/2/253146.jpg",m:"epico",g:"azione",score:10},
-  {t:"Berserk",img:"https://cdn.myanimelist.net/images/manga/1/157897.jpg",m:"oscuro",g:"fantasy",score:10},
-  {t:"Attack on Titan",img:"https://cdn.myanimelist.net/images/manga/2/37846.jpg",m:"oscuro",g:"azione",score:10},
-  {t:"Death Note",img:"https://cdn.myanimelist.net/images/manga/2/153541.jpg",m:"psicologico",g:"thriller",score:9},
-  {t:"Vinland Saga",img:"https://cdn.myanimelist.net/images/manga/2/159492.jpg",m:"drammatico",g:"azione",score:9},
-  {t:"Vagabond",img:"https://cdn.myanimelist.net/images/manga/1/259070.jpg",m:"realistico",g:"azione",score:10},
-  {t:"Chainsaw Man",img:"https://cdn.myanimelist.net/images/manga/3/216464.jpg",m:"caos",g:"azione",score:9},
-  {t:"Jujutsu Kaisen",img:"https://cdn.myanimelist.net/images/manga/3/216292.jpg",m:"oscuro",g:"azione",score:9},
-  {t:"Spy x Family",img:"https://cdn.myanimelist.net/images/manga/3/188896.jpg",m:"leggero",g:"azione",score:8},
-  {t:"Solo Leveling",img:"https://cdn.myanimelist.net/images/manga/3/222295.jpg",m:"epico",g:"fantasy",score:9},
-  {t:"Batman",img:"https://upload.wikimedia.org/wikipedia/en/1/17/Batman_Comic_Book.jpg",m:"oscuro",g:"azione",score:10},
-  {t:"Spider-Man",img:"https://upload.wikimedia.org/wikipedia/en/0/0c/Spider-Man_%282002_film%29_poster.jpg",m:"eroe",g:"azione",score:9}
+{t:"One Piece",img:"https://cdn.myanimelist.net/images/manga/2/253146.jpg",m:"epico",g:"azione",s:"manga"},
+{t:"Berserk",img:"https://cdn.myanimelist.net/images/manga/1/157897.jpg",m:"oscuro",g:"fantasy",s:"manga"},
+{t:"Attack on Titan",img:"https://cdn.myanimelist.net/images/manga/2/37846.jpg",m:"oscuro",g:"azione",s:"manga"},
+{t:"Death Note",img:"https://cdn.myanimelist.net/images/manga/2/153541.jpg",m:"psicologico",g:"thriller",s:"manga"},
+{t:"Vinland Saga",img:"https://cdn.myanimelist.net/images/manga/2/159492.jpg",m:"drammatico",g:"azione",s:"manga"},
+{t:"Chainsaw Man",img:"https://cdn.myanimelist.net/images/manga/3/216464.jpg",m:"caos",g:"azione",s:"manga"},
+{t:"Jujutsu Kaisen",img:"https://cdn.myanimelist.net/images/manga/3/216292.jpg",m:"oscuro",g:"azione",s:"manga"},
+{t:"Spy x Family",img:"https://cdn.myanimelist.net/images/manga/3/188896.jpg",m:"leggero",g:"azione",s:"manga"},
+{t:"Solo Leveling",img:"https://cdn.myanimelist.net/images/manga/3/222295.jpg",m:"epico",g:"fantasy",s:"manga"},
+{t:"Batman",img:"https://upload.wikimedia.org/wikipedia/en/1/17/Batman_Comic_Book.jpg",m:"oscuro",g:"azione",s:"comics"},
+{t:"Spider-Man",img:"https://upload.wikimedia.org/wikipedia/en/0/0c/Spider-Man_%282002_film%29_poster.jpg",m:"eroe",g:"azione",s:"comics"}
 ];
 
+// CARD
 function card(item){
-  return `<div class='card'><img src='${item.img}'><p>${item.t}</p></div>`;
+return `
+<div class="card">
+<img src="${item.img}">
+<p>${item.t}</p>
+<small>Compatibilità: ${item.score?.toFixed(1) || "—"}</small>
+</div>
+`;
 }
 
-// AI-like scoring engine
+// AI ENGINE
 function generateAI(){
-  const mood=document.getElementById("mood").value.toLowerCase();
-  const genre=document.getElementById("genre").value.toLowerCase();
 
-  let results=db.map(x=>{
-    let score=x.score;
+const mood = document.getElementById("mood").value.toLowerCase().trim();
+const genre = document.getElementById("genre").value.toLowerCase().trim();
+const style = document.getElementById("style").value.toLowerCase().trim();
 
-    if(mood && x.m.includes(mood)) score+=2;
-    if(genre && x.g.includes(genre)) score+=2;
+let results = db.map(x => {
 
-    return {...x,score};
-  });
+let score = 0;
 
-  results.sort((a,b)=>b.score-a.score);
+if(mood && x.m.includes(mood)) score += 3;
+if(genre && x.g.includes(genre)) score += 3;
+if(style && x.s.includes(style)) score += 2;
 
-  document.getElementById("trend").innerHTML=results.slice(0,5).map(card).join("");
+// bonus match completo
+if(mood && genre && style &&
+x.m.includes(mood) &&
+x.g.includes(genre) &&
+x.s.includes(style)){
+score += 5;
 }
 
+// effetto AI
+score += Math.random();
+
+return {...x, score};
+
+});
+
+// filtro reale
+results = results.filter(x => x.score > 2);
+
+// ordina
+results.sort((a,b)=>b.score-a.score);
+
+const container = document.getElementById("results");
+
+// blocca animazione
+container.style.animation = "none";
+
+if(results.length === 0){
+container.innerHTML = "<p style='padding:20px'>Nessun risultato 😢</p>";
+return;
+}
+
+container.innerHTML = results.map(card).join("");
+
+}
+
+// BEST LOOP
 function loadBest(){
-  const best=[...db].sort(()=>Math.random()-0.5).slice(0,5);
-  const loop=[...best,...best];
-  document.getElementById("best").innerHTML=loop.map(card).join("");
-}
-
-function loadTrend(){
-  const mix=[...db].sort(()=>Math.random()-0.5).slice(0,5);
-  const loop=[...mix,...mix];
-  document.getElementById("trend").innerHTML=loop.map(card).join("");
+const best = [...db].sort(()=>Math.random()-0.5).slice(0,5);
+const loop = [...best,...best];
+document.getElementById("best").innerHTML = loop.map(card).join("");
 }
 
 loadBest();
-loadTrend();
 setInterval(loadBest,5000);
-setInterval(loadTrend,4000);
 
 </script>
 
