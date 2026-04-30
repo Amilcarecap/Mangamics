@@ -4,120 +4,147 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>mangamics</title>
+
+  <!-- PWA basic -->
+  <link rel="manifest" id="manifest">
+  <meta name="theme-color" content="#ff3c00">
+
   <style>
     body { font-family: Arial, sans-serif; margin:0; background:#0b0b0b; color:#fff; }
     header { background:#ff3c00; padding:20px; text-align:center; font-size:24px; font-weight:bold; }
     .container { padding:20px; }
+
+    .tabs { display:flex; gap:10px; margin-bottom:15px; }
+    .tab { padding:8px 12px; background:#222; border-radius:6px; cursor:pointer; }
+    .tab.active { background:#ff3c00; }
+
     .topbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px; }
     input, select { padding:10px; border-radius:6px; border:none; width:200px; }
     button { background:#ff3c00; border:none; padding:10px; color:white; cursor:pointer; border-radius:6px; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap:15px; }
+
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap:15px; }
+
     .card { background:#1a1a1a; border-radius:12px; overflow:hidden; transition:0.3s; }
     .card:hover { transform: scale(1.05); }
+
     .card img { width:100%; height:250px; object-fit:cover; }
+
     .card-content { padding:10px; }
-    .tabs { margin:15px 0; display:flex; gap:10px; }
-    .tab { padding:8px 12px; background:#222; border-radius:6px; cursor:pointer; }
-    .tab.active { background:#ff3c00; }
+
+    .loader { text-align:center; margin:20px; }
   </style>
 </head>
 <body>
 
-<header>
-  mangamics 🎬
-</header>
+<header>mangamics 🎬</header>
 
 <div class="container">
 
   <div class="tabs">
-    <div class="tab active" onclick="showTab('home')">Home</div>
-    <div class="tab" onclick="showTab('fav')">Preferiti ❤️</div>
+    <div class="tab active" onclick="showTab(event,'home')">Home</div>
+    <div class="tab" onclick="showTab(event,'fav')">Preferiti ❤️</div>
   </div>
 
   <div id="home">
     <div class="topbar">
       <select id="genre">
-        <option value="azione">Azione</option>
-        <option value="romantico">Romantico</option>
+        <option value="">Tutti</option>
+        <option value="action">Azione</option>
+        <option value="romance">Romantico</option>
         <option value="fantasy">Fantasy</option>
         <option value="horror">Horror</option>
       </select>
 
-      <input type="text" id="search" placeholder="Cerca manga...">
-      <button onclick="consiglia()">Cerca</button>
+      <input type="text" id="search" placeholder="Cerca manga o anime...">
+      <button onclick="searchAll()">Cerca</button>
     </div>
 
-    <h2>Risultati</h2>
     <div id="results" class="grid"></div>
+    <div id="loader" class="loader"></div>
   </div>
 
   <div id="fav" style="display:none;">
-    <h2>I tuoi preferiti</h2>
+    <h2>Preferiti ❤️</h2>
     <div id="favorites" class="grid"></div>
   </div>
 
 </div>
 
 <script>
-const database = [
-  { titolo: "Attack on Titan", genere: "azione", rating: 9.5, img: "https://via.placeholder.com/300x400?text=AoT" },
-  { titolo: "One Piece", genere: "azione", rating: 9.7, img: "https://via.placeholder.com/300x400?text=OP" },
-  { titolo: "Your Name", genere: "romantico", rating: 9.0, img: "https://via.placeholder.com/300x400?text=YN" },
-  { titolo: "Berserk", genere: "fantasy", rating: 9.8, img: "https://via.placeholder.com/300x400?text=Berserk" },
-  { titolo: "Tokyo Ghoul", genere: "horror", rating: 8.9, img: "https://via.placeholder.com/300x400?text=TG" }
+const localDB = [
+  { titolo: "Attack on Titan", img: "https://via.placeholder.com/300x400?text=AoT" },
+  { titolo: "One Piece", img: "https://via.placeholder.com/300x400?text=OP" }
 ];
 
-function creaCard(item) {
+function card(item) {
   return `
     <div class="card">
-      <img src="${item.img}">
+      <img src="${item.image || item.img}">
       <div class="card-content">
-        <h3>${item.titolo}</h3>
-        <p>⭐ ${item.rating}</p>
-        <button onclick="preferito('${item.titolo}')">❤️</button>
+        <h3>${item.title || item.titolo}</h3>
+        <button onclick="addFav('${(item.title || item.titolo).replace(/'/g,"\\'")}')">❤️</button>
       </div>
     </div>
   `;
 }
 
-function consiglia() {
+async function searchAll() {
+  const q = document.getElementById("search").value;
   const genre = document.getElementById("genre").value;
-  const search = document.getElementById("search").value.toLowerCase();
 
-  let results = database.filter(item => item.genere === genre);
+  document.getElementById("loader").innerText = "Caricamento...";
 
-  if (search) {
-    results = results.filter(item => item.titolo.toLowerCase().includes(search));
+  let html = "";
+
+  // local
+  localDB.forEach(i => {
+    if (!q || i.titolo.toLowerCase().includes(q.toLowerCase())) {
+      html += card(i);
+    }
+  });
+
+  // API Jikan
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime?q=${q}&limit=6`);
+    const data = await res.json();
+
+    data.data.forEach(a => {
+      html += card({
+        title: a.title,
+        image: a.images.jpg.image_url
+      });
+    });
+  } catch (e) {
+    console.log("API error", e);
   }
 
-  document.getElementById("results").innerHTML = results.map(creaCard).join("");
+  document.getElementById("results").innerHTML = html;
+  document.getElementById("loader").innerText = "";
 }
 
-function preferito(titolo) {
+function addFav(title) {
   let fav = JSON.parse(localStorage.getItem("fav")) || [];
-  if (!fav.includes(titolo)) fav.push(titolo);
+  if (!fav.includes(title)) fav.push(title);
   localStorage.setItem("fav", JSON.stringify(fav));
-  alert("Aggiunto ai preferiti ❤️");
   loadFav();
 }
 
 function loadFav() {
   let fav = JSON.parse(localStorage.getItem("fav")) || [];
-  let items = database.filter(m => fav.includes(m.titolo));
-  document.getElementById("favorites").innerHTML = items.map(creaCard).join("");
+  document.getElementById("favorites").innerHTML = fav.map(t => `<div class='card'><div class='card-content'><h3>${t}</h3></div></div>`).join("");
 }
 
-function showTab(tab) {
-  document.getElementById("home").style.display = tab === 'home' ? 'block' : 'none';
-  document.getElementById("fav").style.display = tab === 'fav' ? 'block' : 'none';
+function showTab(e, tab) {
+  document.getElementById("home").style.display = tab==='home'?'block':'none';
+  document.getElementById("fav").style.display = tab==='fav'?'block':'none';
 
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  e.target.classList.add('active');
 
-  if (tab === 'fav') loadFav();
+  if(tab==='fav') loadFav();
 }
 
-consiglia();
+searchAll();
 </script>
 
 </body>
