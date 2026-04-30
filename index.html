@@ -1,204 +1,175 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MANGAMICS</title>
+import React, { useEffect } from "react";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft, Star, Calendar, Layers, Clock, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import Navbar from "@/components/layout/Navbar";
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top, #0b0b0b, #050505);
-  color: white;
+export default function Detail() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const item = location.state?.item;
+
+  // ✅ FIX: no navigation during render
+  useEffect(() => {
+    if (!item) {
+      navigate("/");
+    }
+  }, [item, navigate]);
+
+  if (!item) return null;
+
+  // 📚 Cover ufficiale fallback (OpenLibrary)
+  const getCover = (item) => {
+    return (
+      item.cover_url ||
+      `https://covers.openlibrary.org/b/title/${encodeURIComponent(
+        item.title
+      )}-L.jpg`
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+
+      <div className="pt-24 pb-16 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto">
+          {/* Back */}
+          <Link
+            to="/results"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(-1);
+            }}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground font-body mb-8 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Torna ai risultati
+          </Link>
+
+          <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-10 items-start">
+            
+            {/* COVER */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-primary/30 group">
+                
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-primary/20 blur-2xl opacity-40" />
+
+                <img
+                  src={getCover(item)}
+                  alt={item.title}
+                  loading="lazy"
+                  className="w-full aspect-[3/4] object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-card/60 via-transparent to-transparent" />
+              </div>
+            </motion.div>
+
+            {/* DETAILS */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="space-y-6"
+            >
+              {/* Title */}
+              <div>
+                <Badge className="bg-primary/20 text-primary font-body text-xs mb-3">
+                  {item.type}
+                </Badge>
+
+                <h1 className="font-heading text-4xl sm:text-5xl font-black tracking-tight text-foreground">
+                  {item.title}
+                </h1>
+
+                <p className="text-lg text-muted-foreground font-body mt-2">
+                  {item.author}
+                </p>
+              </div>
+
+              {/* Rating */}
+              {item.rating && (
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 bg-yellow-500/10 px-3 py-1.5 rounded-full">
+                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                    <span className="font-heading text-lg font-bold text-yellow-400">
+                      {item.rating}/10
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Meta */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {item.year && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="w-4 h-4 text-primary/60" />
+                    <span>{item.year}</span>
+                  </div>
+                )}
+
+                {item.status && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4 text-primary/60" />
+                    <span>{item.status}</span>
+                  </div>
+                )}
+
+                {item.volumes && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Layers className="w-4 h-4 text-primary/60" />
+                    <span>{item.volumes} volumi</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Genres */}
+              <div className="flex flex-wrap gap-2">
+                {item.genres?.map((genre) => (
+                  <span
+                    key={genre}
+                    className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-sm font-medium shadow-sm"
+                  >
+                    {genre}
+                  </span>
+                ))}
+              </div>
+
+              {/* Description */}
+              <div className="space-y-3">
+                <h2 className="font-heading text-xl font-bold text-foreground">
+                  Trama
+                </h2>
+                <p className="text-secondary-foreground/80 font-body leading-relaxed">
+                  {item.long_description || item.short_description}
+                </p>
+              </div>
+
+              {/* Match reason */}
+              {item.match_reason && (
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    <h3 className="font-heading font-bold text-foreground">
+                      Perché lo consigliamo
+                    </h3>
+                  </div>
+                  <p className="text-sm text-secondary-foreground/70 font-body leading-relaxed">
+                    {item.match_reason}
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-/* LOGO RETRO SCI-FI */
-.logo {
-  text-align: center;
-  font-size: 42px;
-  letter-spacing: 8px;
-  padding: 30px 10px;
-  font-weight: bold;
-  color: #00f0ff;
-  text-shadow:
-    0 0 5px #00f0ff,
-    0 0 15px #00f0ff,
-    0 0 30px #ff3c00;
-  font-family: "Arial Black", sans-serif;
-}
-
-/* SETUP */
-#setup {
-  max-width: 700px;
-  margin: auto;
-  padding: 20px;
-  text-align: center;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border-radius: 8px;
-  border: none;
-  background: #1a1a1a;
-  color: white;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  background: #ff3c00;
-  border: none;
-  color: white;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* ROW STYLE (NETFLIX LIKE) */
-.row {
-  padding: 20px;
-}
-
-.row h2 {
-  margin-left: 10px;
-  color: #00f0ff;
-}
-
-.scroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 15px;
-  padding: 10px;
-}
-
-/* CARD */
-.card {
-  min-width: 160px;
-  background: #111;
-  border-radius: 10px;
-  overflow: hidden;
-  transition: 0.3s;
-  box-shadow: 0 0 10px rgba(0,240,255,0.1);
-}
-
-.card:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 15px rgba(255,60,0,0.4);
-}
-
-.card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-}
-
-.card p {
-  margin: 5px;
-  font-size: 13px;
-}
-
-/* SCROLLBAR */
-.scroll::-webkit-scrollbar {
-  height: 6px;
-}
-.scroll::-webkit-scrollbar-thumb {
-  background: #ff3c00;
-  border-radius: 10px;
-}
-
-/* HIDDEN */
-.hidden {
-  display: none;
-}
-</style>
-</head>
-
-<body>
-
-<div class="logo">MANGAMICS</div>
-
-<!-- SETUP SEMPRE IN HOME -->
-<div id="setup">
-  <h2>🔥 Inserisci i tuoi gusti</h2>
-
-  <input id="g1" placeholder="Genere 1 (es: azione)">
-  <input id="g2" placeholder="Genere 2 (es: fantasy)">
-  <input id="g3" placeholder="Genere 3 (es: horror)">
-
-  <button onclick="start()">Attiva universo consigli</button>
-</div>
-
-<!-- CONTENUTO -->
-<div id="app">
-
-  <div class="row">
-    <h2>🎲 Esplora il multiverso manga</h2>
-    <div id="random" class="scroll"></div>
-  </div>
-
-  <div class="row">
-    <h2>🔥 Consigli per te</h2>
-    <div id="results" class="scroll"></div>
-  </div>
-
-</div>
-
-<script>
-
-const database = [
-  { titolo:"Attack on Titan", genere:"azione", img:"https://upload.wikimedia.org/wikipedia/en/7/7a/Attack_on_Titan_cover.jpg" },
-  { titolo:"One Piece", genere:"azione", img:"https://upload.wikimedia.org/wikipedia/en/6/6f/OnePiece_cover.png" },
-  { titolo:"Naruto", genere:"azione", img:"https://upload.wikimedia.org/wikipedia/en/9/94/NarutoCoverTankobon1.jpg" },
-  { titolo:"Berserk", genere:"fantasy", img:"https://upload.wikimedia.org/wikipedia/en/4/4a/Berserk_vol01.png" },
-  { titolo:"Tokyo Ghoul", genere:"horror", img:"https://upload.wikimedia.org/wikipedia/en/5/5a/Tokyo_Ghoul_volume_1_cover.jpg" },
-  { titolo:"Death Note", genere:"horror", img:"https://upload.wikimedia.org/wikipedia/en/6/6f/Death_Note_Vol_1.jpg" },
-  { titolo:"Dragon Ball", genere:"azione", img:"https://upload.wikimedia.org/wikipedia/en/4/4c/Dragon_Ball_volume_1.png" }
-];
-
-let userGenres = [];
-
-function card(item){
-  return `
-  <div class="card">
-    <img src="${item.img}">
-    <p><b>${item.titolo}</b></p>
-  </div>`;
-}
-
-/* START */
-function start(){
-  userGenres = [
-    document.getElementById("g1").value.toLowerCase(),
-    document.getElementById("g2").value.toLowerCase(),
-    document.getElementById("g3").value.toLowerCase()
-  ];
-
-  loadRecommendations();
-}
-
-/* RANDOM HOME ROW */
-function loadRandom(){
-  const shuffled = [...database].sort(() => 0.5 - Math.random());
-  document.getElementById("random").innerHTML =
-    shuffled.slice(0,6).map(card).join("");
-}
-
-/* RECOMMENDATIONS */
-function loadRecommendations(){
-  const filtered = database.filter(m => userGenres.includes(m.genere));
-  document.getElementById("results").innerHTML =
-    filtered.length ? filtered.map(card).join("")
-    : "<p style='padding:10px'>Nessun match trovato 😢 prova altri gusti</p>";
-}
-
-/* INIT */
-loadRandom();
-
-</script>
-
-</body>
-</html>
