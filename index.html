@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MANGOMIC</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; background:#111; color:#fff; }
+    header { background:#ff3c00; padding:20px; text-align:center; }
+    h1 { margin:0; }
+    .container { padding:20px; }
+    .card { background:#1e1e1e; padding:15px; margin:10px 0; border-radius:10px; }
+    button { background:#ff3c00; border:none; padding:10px; color:white; cursor:pointer; border-radius:5px; }
+    select, input { padding:10px; margin:10px 0; width:100%; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>MANGOMIC</h1>
+  <p>Scopri cosa leggere in base ai tuoi gusti</p>
+</header>
+
+<div class="container">
+  <h2>Scegli i tuoi gusti</h2>
+  <select id="genre">
+    <option value="azione">Azione</option>
+    <option value="romantico">Romantico</option>
+    <option value="fantasy">Fantasy</option>
+    <option value="horror">Horror</option>
+  </select>
+  <button onclick="consiglia()">Consigliami qualcosa</button>
+
+  <h2>Consiglio del giorno</h2>
+  <div id="daily" class="card"></div>
+
+  <h2>Risultati</h2>
+  <div id="results"></div>
+</div>
+
+<script>
+const database = [
+  { titolo: "Attack on Titan", genere: "azione", rating: 9.5, descrizione: "Umani contro giganti" },
+  { titolo: "One Piece", genere: "azione", rating: 9.7, descrizione: "Avventure pirata" },
+  { titolo: "Your Name", genere: "romantico", rating: 9.0, descrizione: "Amore e destino" },
+  { titolo: "Berserk", genere: "fantasy", rating: 9.8, descrizione: "Fantasy oscuro" },
+  { titolo: "Tokyo Ghoul", genere: "horror", rating: 8.9, descrizione: "Mostri e identità" }
+];
+
+function consiglia() {
+  const genre = document.getElementById("genre").value;
+  const results = database.filter(item => item.genere === genre);
+  const container = document.getElementById("results");
+  container.innerHTML = "";
+
+  results.forEach(item => {
+    container.innerHTML += `
+      <div class="card">
+        <h3>${item.titolo}</h3>
+        <p>${item.descrizione}</p>
+        <p>Rating: ${item.rating}</p>
+        <button onclick="preferito('${item.titolo}')">Aggiungi ai preferiti</button>
+      </div>
+    `;
+  });
+}
+
+function preferito(titolo) {
+  alert(titolo + " aggiunto ai preferiti!");
+}
+
+function consiglioDelGiorno() {
+  const random = database[Math.floor(Math.random() * database.length)];
+  document.getElementById("daily").innerHTML = `
+    <h3>${random.titolo}</h3>
+    <p>${random.descrizione}</p>
+    <p>Rating: ${random.rating}</p>
+  `;
+}
+
+consiglioDelGiorno();
+</script>
+
+</body>
+</html>
+
+<!-- GUIDA PASSO PASSO
+
+1. Vai su https://github.com
+2. Crea un account
+3. Clicca su "New repository"
+4. Nome: mangomic-site
+5. Carica questo file come index.html
+6. Vai su Settings > Pages
+7. Attiva GitHub Pages (branch main)
+8. Otterrai un link tipo:
+   https://tuonome.github.io/mangomic-site
+
+MODIFICHE SEMPLICI:
+- Cambia database per aggiungere manga
+- Cambia colori nel CSS
+- Aggiungi nuovi generi
+
+PER MIGLIORARE:
+- Usa Firebase per salvare preferiti
+- Aggiungi login utenti
+- Integra API manga (es. Jikan API)
+
+-->
