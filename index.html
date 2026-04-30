@@ -1,175 +1,84 @@
-import React, { useEffect } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowLeft, Star, Calendar, Layers, Clock, Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import Navbar from "@/components/layout/Navbar";
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mangamics</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; background:#111; color:#fff; }
+    header { background:#ff3c00; padding:20px; text-align:center; }
+    h1 { margin:0; }
+    .container { padding:20px; }
+    .card { background:#1e1e1e; padding:15px; margin:10px 0; border-radius:10px; }
+    button { background:#ff3c00; border:none; padding:10px; color:white; cursor:pointer; border-radius:5px; }
+    select, input { padding:10px; margin:10px 0; width:100%; }
+  </style>
+</head>
+<body>
 
-export default function Detail() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const item = location.state?.item;
+<header>
+  <h1>mangamics</h1>
+  <p>mangamics - Scopri cosa leggere in base ai tuoi gusti</p>
+</header>
 
-  // ✅ FIX: no navigation during render
-  useEffect(() => {
-    if (!item) {
-      navigate("/");
-    }
-  }, [item, navigate]);
+<div class="container">
+  <h2>Scegli i tuoi gusti</h2>
+  <select id="genre">
+    <option value="azione">Azione</option>
+    <option value="romantico">Romantico</option>
+    <option value="fantasy">Fantasy</option>
+    <option value="horror">Horror</option>
+  </select>
+  <button onclick="consiglia()">Consigliami qualcosa</button>
 
-  if (!item) return null;
+  <h2>Consiglio del giorno</h2>
+  <div id="daily" class="card"></div>
 
-  // 📚 Cover ufficiale fallback (OpenLibrary)
-  const getCover = (item) => {
-    return (
-      item.cover_url ||
-      `https://covers.openlibrary.org/b/title/${encodeURIComponent(
-        item.title
-      )}-L.jpg`
-    );
-  };
+  <h2>Risultati</h2>
+  <div id="results"></div>
+</div>
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+<script>
+const database = [
+  { titolo: "Attack on Titan", genere: "azione", rating: 9.5, descrizione: "Umani contro giganti" },
+  { titolo: "One Piece", genere: "azione", rating: 9.7, descrizione: "Avventure pirata" },
+  { titolo: "Your Name", genere: "romantico", rating: 9.0, descrizione: "Amore e destino" },
+  { titolo: "Berserk", genere: "fantasy", rating: 9.8, descrizione: "Fantasy oscuro" },
+  { titolo: "Tokyo Ghoul", genere: "horror", rating: 8.9, descrizione: "Mostri e identità" }
+];
 
-      <div className="pt-24 pb-16 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto">
-          {/* Back */}
-          <Link
-            to="/results"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate(-1);
-            }}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground font-body mb-8 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Torna ai risultati
-          </Link>
+function consiglia() {
+  const genre = document.getElementById("genre").value;
+  const results = database.filter(item => item.genere === genre);
+  const container = document.getElementById("results");
+  container.innerHTML = "";
 
-          <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-10 items-start">
-            
-            {/* COVER */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-primary/30 group">
-                
-                {/* Glow effect */}
-                <div className="absolute -inset-1 bg-primary/20 blur-2xl opacity-40" />
-
-                <img
-                  src={getCover(item)}
-                  alt={item.title}
-                  loading="lazy"
-                  className="w-full aspect-[3/4] object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-card/60 via-transparent to-transparent" />
-              </div>
-            </motion.div>
-
-            {/* DETAILS */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="space-y-6"
-            >
-              {/* Title */}
-              <div>
-                <Badge className="bg-primary/20 text-primary font-body text-xs mb-3">
-                  {item.type}
-                </Badge>
-
-                <h1 className="font-heading text-4xl sm:text-5xl font-black tracking-tight text-foreground">
-                  {item.title}
-                </h1>
-
-                <p className="text-lg text-muted-foreground font-body mt-2">
-                  {item.author}
-                </p>
-              </div>
-
-              {/* Rating */}
-              {item.rating && (
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 bg-yellow-500/10 px-3 py-1.5 rounded-full">
-                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                    <span className="font-heading text-lg font-bold text-yellow-400">
-                      {item.rating}/10
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Meta */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {item.year && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4 text-primary/60" />
-                    <span>{item.year}</span>
-                  </div>
-                )}
-
-                {item.status && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4 text-primary/60" />
-                    <span>{item.status}</span>
-                  </div>
-                )}
-
-                {item.volumes && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Layers className="w-4 h-4 text-primary/60" />
-                    <span>{item.volumes} volumi</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Genres */}
-              <div className="flex flex-wrap gap-2">
-                {item.genres?.map((genre) => (
-                  <span
-                    key={genre}
-                    className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-sm font-medium shadow-sm"
-                  >
-                    {genre}
-                  </span>
-                ))}
-              </div>
-
-              {/* Description */}
-              <div className="space-y-3">
-                <h2 className="font-heading text-xl font-bold text-foreground">
-                  Trama
-                </h2>
-                <p className="text-secondary-foreground/80 font-body leading-relaxed">
-                  {item.long_description || item.short_description}
-                </p>
-              </div>
-
-              {/* Match reason */}
-              {item.match_reason && (
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                    <h3 className="font-heading font-bold text-foreground">
-                      Perché lo consigliamo
-                    </h3>
-                  </div>
-                  <p className="text-sm text-secondary-foreground/70 font-body leading-relaxed">
-                    {item.match_reason}
-                  </p>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        </div>
+  results.forEach(item => {
+    container.innerHTML += `
+      <div class="card">
+        <h3>${item.titolo}</h3>
+        <p>${item.descrizione}</p>
+        <p>Rating: ${item.rating}</p>
+        <button onclick="preferito('${item.titolo}')">Aggiungi ai preferiti</button>
       </div>
-    </div>
-  );
+    `;
+  });
 }
+
+function preferito(titolo) {
+  alert(titolo + " aggiunto ai preferiti!");
+}
+
+function consiglioDelGiorno() {
+  const random = database[Math.floor(Math.random() * database.length)];
+  document.getElementById("daily").innerHTML = `
+    <h3>${random.titolo}</h3>
+    <p>${random.descrizione}</p>
+    <p>Rating: ${random.rating}</p>
+  `;
+}
+
+consiglioDelGiorno();
+</script>
+
+</body>
+</html>
