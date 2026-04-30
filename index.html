@@ -14,7 +14,6 @@
       overflow-x:hidden;
     }
 
-    /* HEADER NETFLIX STYLE */
     header{
       display:flex;
       justify-content:center;
@@ -41,7 +40,6 @@
       margin:auto;
     }
 
-    /* INPUT PANEL NETFLIX STYLE */
     .panel{
       background:#0b0b0b;
       border:1px solid #222;
@@ -73,7 +71,6 @@
 
     button:hover{opacity:0.85;}
 
-    /* ROW STYLE NETFLIX */
     .row-title{
       margin:18px 0 10px;
       font-size:18px;
@@ -113,7 +110,6 @@
       font-size:13px;
       text-align:center;
     }
-
   </style>
 </head>
 <body>
@@ -127,48 +123,36 @@
   <div class="panel">
     <h2>Personalizza i tuoi gusti</h2>
     <input id="mood" placeholder="Mood (oscuro, epico, leggero)">
-    <input id="genre" placeholder="Genere (azione, fantasy, romance)">
-    <input id="style" placeholder="Stile (manga, comics, graphic novel)">
+    <input id="genre" placeholder="Genere (azione, fantasy, thriller)">
+    <input id="style" placeholder="Stile (manga, comics)">
     <button onclick="generate()">Genera consigli</button>
   </div>
 
   <div class="row-title">🔥 Consigli per te</div>
   <div id="results" class="row"></div>
 
-  <div class="row-title">🌍 Anime & Manga più popolari</div>
-  <div id="animeRow" class="row"></div>
-
-  <div class="row-title">🦸 Comics occidentali</div>
-  <div id="comicsRow" class="row"></div>
+  <div class="row-title">🌍 Manga & Comics più famosi</div>
+  <div id="trend" class="row"></div>
 
 </div>
 
 <script>
 
-const anime = [
-  {t:"Attack on Titan",img:"https://cdn.myanimelist.net/images/anime/10/47347.jpg",m:"oscuro",g:"azione"},
-  {t:"One Piece",img:"https://cdn.myanimelist.net/images/anime/6/73245.jpg"},
-  {t:"Naruto",img:"https://cdn.myanimelist.net/images/anime/13/17405.jpg"},
-  {t:"Bleach",img:"https://cdn.myanimelist.net/images/anime/3/40451.jpg"},
-  {t:"Jujutsu Kaisen",img:"https://cdn.myanimelist.net/images/anime/1171/109222.jpg"},
-  {t:"Chainsaw Man",img:"https://cdn.myanimelist.net/images/anime/1806/126216.jpg"},
-  {t:"Demon Slayer",img:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg"},
-  {t:"Tokyo Ghoul",img:"https://cdn.myanimelist.net/images/anime/5/64449.jpg"},
-  {t:"Berserk",img:"https://cdn.myanimelist.net/images/anime/2/33061.jpg"},
-  {t:"Fullmetal Alchemist",img:"https://cdn.myanimelist.net/images/anime/1223/96541.jpg"},
-  {t:"Spy x Family",img:"https://cdn.myanimelist.net/images/anime/1441/122795.jpg"},
-  {t:"Solo Leveling",img:"https://cdn.myanimelist.net/images/anime/1768/138268.jpg"}
+const db = [
+  {t:"One Piece",img:"https://cdn.myanimelist.net/images/manga/2/253146.jpg",m:"epico",g:"azione"},
+  {t:"Naruto",img:"https://cdn.myanimelist.net/images/manga/3/249658.jpg",m:"epico",g:"azione"},
+  {t:"Attack on Titan",img:"https://cdn.myanimelist.net/images/manga/2/37846.jpg",m:"oscuro",g:"azione"},
+  {t:"Berserk",img:"https://cdn.myanimelist.net/images/manga/1/157897.jpg",m:"oscuro",g:"fantasy"},
+  {t:"Death Note",img:"https://cdn.myanimelist.net/images/manga/2/153541.jpg",m:"psicologico",g:"thriller"},
+  {t:"Chainsaw Man",img:"https://cdn.myanimelist.net/images/manga/3/216464.jpg",m:"caos",g:"azione"},
+  {t:"Jujutsu Kaisen",img:"https://cdn.myanimelist.net/images/manga/3/216292.jpg",m:"oscuro",g:"azione"},
+  {t:"Spy x Family",img:"https://cdn.myanimelist.net/images/manga/3/188896.jpg",m:"leggero",g:"azione"},
+  {t:"Vinland Saga",img:"https://cdn.myanimelist.net/images/manga/2/159492.jpg",m:"drammatico",g:"azione"},
+  {t:"Vagabond",img:"https://cdn.myanimelist.net/images/manga/1/259070.jpg",m:"realistico",g:"azione"},
+  {t:"Solo Leveling",img:"https://cdn.myanimelist.net/images/manga/3/222295.jpg",m:"epico",g:"fantasy"},
+  {t:"Batman",img:"https://upload.wikimedia.org/wikipedia/en/1/17/Batman_Comic_Book.jpg",m:"oscuro",g:"azione"},
+  {t:"Spider-Man",img:"https://upload.wikimedia.org/wikipedia/en/0/0c/Spider-Man_%282002_film%29_poster.jpg",m:"eroe",g:"azione"}
 ];
-
-const comics = [
-  {t:"Batman",img:"https://upload.wikimedia.org/wikipedia/en/1/17/Batman_Comic_Book.jpg"},
-  {t:"Spider-Man",img:"https://upload.wikimedia.org/wikipedia/en/0/0c/Spider-Man_%282002_film%29_poster.jpg"},
-  {t:"Superman",img:"https://upload.wikimedia.org/wikipedia/en/3/35/Supermanflying.png"},
-  {t:"Watchmen",img:"https://upload.wikimedia.org/wikipedia/en/a/a7/Watchmen_first_edition_cover.jpg"},
-  {t:"The Boys",img:"https://upload.wikimedia.org/wikipedia/en/4/4c/The_Boys_%28comics%29.jpg"}
-];
-
-const db = [...anime];
 
 function card(item){
   return `<div class='card'><img src='${item.img}'><p>${item.t}</p></div>`;
@@ -178,18 +162,22 @@ function generate(){
   const mood=document.getElementById("mood").value.toLowerCase();
   const genre=document.getElementById("genre").value.toLowerCase();
 
-  const res=db.filter(x=>(!mood||x.m?.includes(mood))&&(!genre||x.g?.includes(genre)));
+  const res=db.filter(x=>(!mood||x.m.includes(mood))&&(!genre||x.g.includes(genre)));
 
-  document.getElementById("results").innerHTML=res.length?res.map(card).join(""):'<p>Nessun risultato</p>';
+  document.getElementById("results").innerHTML=res.map(card).join("");
 }
 
-function loadRows(){
-  document.getElementById("animeRow").innerHTML = anime.sort(()=>Math.random()-0.5).map(card).join("");
-  document.getElementById("comicsRow").innerHTML = comics.sort(()=>Math.random()-0.5).map(card).join("");
+function loadTrending(){
+  const shuffled=[...db].sort(()=>Math.random()-0.5);
+  document.getElementById("trend").innerHTML=shuffled.map(card).join("");
 }
 
-loadRows();
+// DINAMICO (MOVING RANDOM EVERY 3s)
+loadTrending();
+setInterval(loadTrending,3000);
+
 </script>
 
 </body>
 </html>
+
