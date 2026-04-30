@@ -1,83 +1,123 @@
+<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>mangamics</title>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#111; color:#fff; }
-    header { background:#ff3c00; padding:20px; text-align:center; }
-    h1 { margin:0; }
+    body { font-family: Arial, sans-serif; margin:0; background:#0b0b0b; color:#fff; }
+    header { background:#ff3c00; padding:20px; text-align:center; font-size:24px; font-weight:bold; }
     .container { padding:20px; }
-    .card { background:#1e1e1e; padding:15px; margin:10px 0; border-radius:10px; }
-    button { background:#ff3c00; border:none; padding:10px; color:white; cursor:pointer; border-radius:5px; }
-    select, input { padding:10px; margin:10px 0; width:100%; }
+    .topbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px; }
+    input, select { padding:10px; border-radius:6px; border:none; width:200px; }
+    button { background:#ff3c00; border:none; padding:10px; color:white; cursor:pointer; border-radius:6px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap:15px; }
+    .card { background:#1a1a1a; border-radius:12px; overflow:hidden; transition:0.3s; }
+    .card:hover { transform: scale(1.05); }
+    .card img { width:100%; height:250px; object-fit:cover; }
+    .card-content { padding:10px; }
+    .tabs { margin:15px 0; display:flex; gap:10px; }
+    .tab { padding:8px 12px; background:#222; border-radius:6px; cursor:pointer; }
+    .tab.active { background:#ff3c00; }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>mangamics</h1>
-  <p>mangamics - Scopri cosa leggere in base ai tuoi gusti</p>
+  mangamics 🎬
 </header>
 
 <div class="container">
-  <h2>Scegli i tuoi gusti</h2>
-  <select id="genre">
-    <option value="azione">Azione</option>
-    <option value="romantico">Romantico</option>
-    <option value="fantasy">Fantasy</option>
-    <option value="horror">Horror</option>
-  </select>
-  <button onclick="consiglia()">Consigliami qualcosa</button>
 
-  <h2>Consiglio del giorno</h2>
-  <div id="daily" class="card"></div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('home')">Home</div>
+    <div class="tab" onclick="showTab('fav')">Preferiti ❤️</div>
+  </div>
 
-  <h2>Risultati</h2>
-  <div id="results"></div>
+  <div id="home">
+    <div class="topbar">
+      <select id="genre">
+        <option value="azione">Azione</option>
+        <option value="romantico">Romantico</option>
+        <option value="fantasy">Fantasy</option>
+        <option value="horror">Horror</option>
+      </select>
+
+      <input type="text" id="search" placeholder="Cerca manga...">
+      <button onclick="consiglia()">Cerca</button>
+    </div>
+
+    <h2>Risultati</h2>
+    <div id="results" class="grid"></div>
+  </div>
+
+  <div id="fav" style="display:none;">
+    <h2>I tuoi preferiti</h2>
+    <div id="favorites" class="grid"></div>
+  </div>
+
 </div>
 
 <script>
 const database = [
-  { titolo: "Attack on Titan", genere: "azione", rating: 9.5, descrizione: "Umani contro giganti" },
-  { titolo: "One Piece", genere: "azione", rating: 9.7, descrizione: "Avventure pirata" },
-  { titolo: "Your Name", genere: "romantico", rating: 9.0, descrizione: "Amore e destino" },
-  { titolo: "Berserk", genere: "fantasy", rating: 9.8, descrizione: "Fantasy oscuro" },
-  { titolo: "Tokyo Ghoul", genere: "horror", rating: 8.9, descrizione: "Mostri e identità" }
+  { titolo: "Attack on Titan", genere: "azione", rating: 9.5, img: "https://via.placeholder.com/300x400?text=AoT" },
+  { titolo: "One Piece", genere: "azione", rating: 9.7, img: "https://via.placeholder.com/300x400?text=OP" },
+  { titolo: "Your Name", genere: "romantico", rating: 9.0, img: "https://via.placeholder.com/300x400?text=YN" },
+  { titolo: "Berserk", genere: "fantasy", rating: 9.8, img: "https://via.placeholder.com/300x400?text=Berserk" },
+  { titolo: "Tokyo Ghoul", genere: "horror", rating: 8.9, img: "https://via.placeholder.com/300x400?text=TG" }
 ];
 
-function consiglia() {
-  const genre = document.getElementById("genre").value;
-  const results = database.filter(item => item.genere === genre);
-  const container = document.getElementById("results");
-  container.innerHTML = "";
-
-  results.forEach(item => {
-    container.innerHTML += `
-      <div class="card">
+function creaCard(item) {
+  return `
+    <div class="card">
+      <img src="${item.img}">
+      <div class="card-content">
         <h3>${item.titolo}</h3>
-        <p>${item.descrizione}</p>
-        <p>Rating: ${item.rating}</p>
-        <button onclick="preferito('${item.titolo}')">Aggiungi ai preferiti</button>
+        <p>⭐ ${item.rating}</p>
+        <button onclick="preferito('${item.titolo}')">❤️</button>
       </div>
-    `;
-  });
-}
-
-function preferito(titolo) {
-  alert(titolo + " aggiunto ai preferiti!");
-}
-
-function consiglioDelGiorno() {
-  const random = database[Math.floor(Math.random() * database.length)];
-  document.getElementById("daily").innerHTML = `
-    <h3>${random.titolo}</h3>
-    <p>${random.descrizione}</p>
-    <p>Rating: ${random.rating}</p>
+    </div>
   `;
 }
 
-consiglioDelGiorno();
+function consiglia() {
+  const genre = document.getElementById("genre").value;
+  const search = document.getElementById("search").value.toLowerCase();
+
+  let results = database.filter(item => item.genere === genre);
+
+  if (search) {
+    results = results.filter(item => item.titolo.toLowerCase().includes(search));
+  }
+
+  document.getElementById("results").innerHTML = results.map(creaCard).join("");
+}
+
+function preferito(titolo) {
+  let fav = JSON.parse(localStorage.getItem("fav")) || [];
+  if (!fav.includes(titolo)) fav.push(titolo);
+  localStorage.setItem("fav", JSON.stringify(fav));
+  alert("Aggiunto ai preferiti ❤️");
+  loadFav();
+}
+
+function loadFav() {
+  let fav = JSON.parse(localStorage.getItem("fav")) || [];
+  let items = database.filter(m => fav.includes(m.titolo));
+  document.getElementById("favorites").innerHTML = items.map(creaCard).join("");
+}
+
+function showTab(tab) {
+  document.getElementById("home").style.display = tab === 'home' ? 'block' : 'none';
+  document.getElementById("fav").style.display = tab === 'fav' ? 'block' : 'none';
+
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (tab === 'fav') loadFav();
+}
+
+consiglia();
 </script>
 
 </body>
