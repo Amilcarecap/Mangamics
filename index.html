@@ -3,54 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>mangamics</title>
+<title>MANGAMICS</title>
 
 <style>
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #0b0b0b;
+  background: radial-gradient(circle at top, #0b0b0b, #050505);
   color: white;
 }
 
-/* HEADER */
-header {
-  background: #111;
-  padding: 20px;
-  font-size: 26px;
+/* LOGO RETRO SCI-FI */
+.logo {
+  text-align: center;
+  font-size: 42px;
+  letter-spacing: 8px;
+  padding: 30px 10px;
   font-weight: bold;
-  color: #ff3c00;
+  color: #00f0ff;
+  text-shadow:
+    0 0 5px #00f0ff,
+    0 0 15px #00f0ff,
+    0 0 30px #ff3c00;
+  font-family: "Arial Black", sans-serif;
 }
 
-/* ONBOARDING */
+/* SETUP */
 #setup {
-  padding: 30px;
   max-width: 700px;
   margin: auto;
+  padding: 20px;
+  text-align: center;
 }
 
-input, select, button {
+input {
   width: 100%;
   padding: 12px;
-  margin: 10px 0;
-  border-radius: 6px;
+  margin: 8px 0;
+  border-radius: 8px;
   border: none;
+  background: #1a1a1a;
+  color: white;
 }
 
 button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
   background: #ff3c00;
+  border: none;
   color: white;
   font-weight: bold;
+  border-radius: 8px;
   cursor: pointer;
 }
 
-/* NETFLIX STYLE ROW */
+/* ROW STYLE (NETFLIX LIKE) */
 .row {
   padding: 20px;
 }
 
 .row h2 {
   margin-left: 10px;
+  color: #00f0ff;
 }
 
 .scroll {
@@ -63,14 +78,16 @@ button {
 /* CARD */
 .card {
   min-width: 160px;
-  background: #1a1a1a;
+  background: #111;
   border-radius: 10px;
   overflow: hidden;
   transition: 0.3s;
+  box-shadow: 0 0 10px rgba(0,240,255,0.1);
 }
 
 .card:hover {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  box-shadow: 0 0 15px rgba(255,60,0,0.4);
 }
 
 .card img {
@@ -81,10 +98,19 @@ button {
 
 .card p {
   margin: 5px;
-  font-size: 14px;
+  font-size: 13px;
 }
 
-/* HIDE AFTER START */
+/* SCROLLBAR */
+.scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.scroll::-webkit-scrollbar-thumb {
+  background: #ff3c00;
+  border-radius: 10px;
+}
+
+/* HIDDEN */
 .hidden {
   display: none;
 }
@@ -93,30 +119,30 @@ button {
 
 <body>
 
-<header>mangamics 🍿</header>
+<div class="logo">MANGAMICS</div>
 
-<!-- ONBOARDING -->
+<!-- SETUP SEMPRE IN HOME -->
 <div id="setup">
-  <h2>Inserisci i tuoi gusti</h2>
+  <h2>🔥 Inserisci i tuoi gusti</h2>
 
   <input id="g1" placeholder="Genere 1 (es: azione)">
   <input id="g2" placeholder="Genere 2 (es: fantasy)">
   <input id="g3" placeholder="Genere 3 (es: horror)">
 
-  <button onclick="start()">Attiva consigli</button>
+  <button onclick="start()">Attiva universo consigli</button>
 </div>
 
-<!-- CONTENT -->
-<div id="app" class="hidden">
+<!-- CONTENUTO -->
+<div id="app">
 
   <div class="row">
-    <h2>Consigli per te</h2>
-    <div id="results" class="scroll"></div>
+    <h2>🎲 Esplora il multiverso manga</h2>
+    <div id="random" class="scroll"></div>
   </div>
 
   <div class="row">
-    <h2>Scelto del giorno</h2>
-    <div id="daily" class="scroll"></div>
+    <h2>🔥 Consigli per te</h2>
+    <div id="results" class="scroll"></div>
   </div>
 
 </div>
@@ -124,11 +150,13 @@ button {
 <script>
 
 const database = [
-  { titolo:"Attack on Titan", genere:"azione", rating:9.5, img:"https://upload.wikimedia.org/wikipedia/en/7/7a/Attack_on_Titan_cover.jpg" },
-  { titolo:"One Piece", genere:"azione", rating:9.7, img:"https://upload.wikimedia.org/wikipedia/en/6/6f/OnePiece_cover.png" },
-  { titolo:"Your Name", genere:"romantico", rating:9.0, img:"https://upload.wikimedia.org/wikipedia/en/0/0b/Your_Name_poster.png" },
-  { titolo:"Berserk", genere:"fantasy", rating:9.8, img:"https://upload.wikimedia.org/wikipedia/en/4/4a/Berserk_vol01.png" },
-  { titolo:"Tokyo Ghoul", genere:"horror", rating:8.9, img:"https://upload.wikimedia.org/wikipedia/en/5/5a/Tokyo_Ghoul_volume_1_cover.jpg" }
+  { titolo:"Attack on Titan", genere:"azione", img:"https://upload.wikimedia.org/wikipedia/en/7/7a/Attack_on_Titan_cover.jpg" },
+  { titolo:"One Piece", genere:"azione", img:"https://upload.wikimedia.org/wikipedia/en/6/6f/OnePiece_cover.png" },
+  { titolo:"Naruto", genere:"azione", img:"https://upload.wikimedia.org/wikipedia/en/9/94/NarutoCoverTankobon1.jpg" },
+  { titolo:"Berserk", genere:"fantasy", img:"https://upload.wikimedia.org/wikipedia/en/4/4a/Berserk_vol01.png" },
+  { titolo:"Tokyo Ghoul", genere:"horror", img:"https://upload.wikimedia.org/wikipedia/en/5/5a/Tokyo_Ghoul_volume_1_cover.jpg" },
+  { titolo:"Death Note", genere:"horror", img:"https://upload.wikimedia.org/wikipedia/en/6/6f/Death_Note_Vol_1.jpg" },
+  { titolo:"Dragon Ball", genere:"azione", img:"https://upload.wikimedia.org/wikipedia/en/4/4c/Dragon_Ball_volume_1.png" }
 ];
 
 let userGenres = [];
@@ -138,10 +166,10 @@ function card(item){
   <div class="card">
     <img src="${item.img}">
     <p><b>${item.titolo}</b></p>
-    <p>⭐ ${item.rating}</p>
   </div>`;
 }
 
+/* START */
 function start(){
   userGenres = [
     document.getElementById("g1").value.toLowerCase(),
@@ -149,23 +177,26 @@ function start(){
     document.getElementById("g3").value.toLowerCase()
   ];
 
-  document.getElementById("setup").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
-
   loadRecommendations();
-  loadDaily();
 }
 
+/* RANDOM HOME ROW */
+function loadRandom(){
+  const shuffled = [...database].sort(() => 0.5 - Math.random());
+  document.getElementById("random").innerHTML =
+    shuffled.slice(0,6).map(card).join("");
+}
+
+/* RECOMMENDATIONS */
 function loadRecommendations(){
   const filtered = database.filter(m => userGenres.includes(m.genere));
   document.getElementById("results").innerHTML =
-    filtered.map(card).join("");
+    filtered.length ? filtered.map(card).join("")
+    : "<p style='padding:10px'>Nessun match trovato 😢 prova altri gusti</p>";
 }
 
-function loadDaily(){
-  const pick = database[Math.floor(Math.random() * database.length)];
-  document.getElementById("daily").innerHTML = card(pick);
-}
+/* INIT */
+loadRandom();
 
 </script>
 
