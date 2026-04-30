@@ -1,81 +1,83 @@
-<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MANGOMIC</title>
+  <title>mangamics</title>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#111; color:#fff; }
-    header { background:#ff3c00; padding:20px; text-align:center; }
-    h1 { margin:0; }
+    body { font-family: Arial, sans-serif; margin:0; background:#0b0b0b; color:#fff; }
+    header { background:#ff3c00; padding:20px; text-align:center; font-size:24px; font-weight:bold; }
     .container { padding:20px; }
-    .card { background:#1e1e1e; padding:15px; margin:10px 0; border-radius:10px; }
-    button { background:#ff3c00; border:none; padding:10px; color:white; cursor:pointer; border-radius:5px; }
-    select, input { padding:10px; margin:10px 0; width:100%; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap:15px; }
+    .card { background:#1a1a1a; border-radius:12px; overflow:hidden; transition:0.3s; }
+    .card:hover { transform: scale(1.05); }
+    .card img { width:100%; height:250px; object-fit:cover; }
+    .card-content { padding:10px; }
+    button { background:#ff3c00; border:none; padding:8px; color:white; cursor:pointer; border-radius:5px; width:100%; }
+    select { padding:10px; margin:10px 0; width:100%; }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>MANGOMIC</h1>
-  <p>Scopri cosa leggere in base ai tuoi gusti</p>
+  mangamics 🎬
 </header>
 
 <div class="container">
-  <h2>Scegli i tuoi gusti</h2>
+  <h2>Scegli il genere</h2>
   <select id="genre">
     <option value="azione">Azione</option>
     <option value="romantico">Romantico</option>
     <option value="fantasy">Fantasy</option>
     <option value="horror">Horror</option>
   </select>
-  <button onclick="consiglia()">Consigliami qualcosa</button>
+  <button onclick="consiglia()">Consigliami</button>
 
   <h2>Consiglio del giorno</h2>
-  <div id="daily" class="card"></div>
+  <div id="daily" class="grid"></div>
 
   <h2>Risultati</h2>
-  <div id="results"></div>
+  <div id="results" class="grid"></div>
 </div>
 
 <script>
 const database = [
-  { titolo: "Attack on Titan", genere: "azione", rating: 9.5, descrizione: "Umani contro giganti" },
-  { titolo: "One Piece", genere: "azione", rating: 9.7, descrizione: "Avventure pirata" },
-  { titolo: "Your Name", genere: "romantico", rating: 9.0, descrizione: "Amore e destino" },
-  { titolo: "Berserk", genere: "fantasy", rating: 9.8, descrizione: "Fantasy oscuro" },
-  { titolo: "Tokyo Ghoul", genere: "horror", rating: 8.9, descrizione: "Mostri e identità" }
+  { titolo: "Attack on Titan", genere: "azione", rating: 9.5, img: "https://via.placeholder.com/300x400?text=Attack+on+Titan" },
+  { titolo: "One Piece", genere: "azione", rating: 9.7, img: "https://via.placeholder.com/300x400?text=One+Piece" },
+  { titolo: "Your Name", genere: "romantico", rating: 9.0, img: "https://via.placeholder.com/300x400?text=Your+Name" },
+  { titolo: "Berserk", genere: "fantasy", rating: 9.8, img: "https://via.placeholder.com/300x400?text=Berserk" },
+  { titolo: "Tokyo Ghoul", genere: "horror", rating: 8.9, img: "https://via.placeholder.com/300x400?text=Tokyo+Ghoul" }
 ];
+
+function creaCard(item) {
+  return `
+    <div class="card">
+      <img src="${item.img}">
+      <div class="card-content">
+        <h3>${item.titolo}</h3>
+        <p>⭐ ${item.rating}</p>
+        <button onclick="preferito('${item.titolo}')">Preferito</button>
+      </div>
+    </div>
+  `;
+}
 
 function consiglia() {
   const genre = document.getElementById("genre").value;
   const results = database.filter(item => item.genere === genre);
   const container = document.getElementById("results");
-  container.innerHTML = "";
-
-  results.forEach(item => {
-    container.innerHTML += `
-      <div class="card">
-        <h3>${item.titolo}</h3>
-        <p>${item.descrizione}</p>
-        <p>Rating: ${item.rating}</p>
-        <button onclick="preferito('${item.titolo}')">Aggiungi ai preferiti</button>
-      </div>
-    `;
-  });
+  container.innerHTML = results.map(creaCard).join("");
 }
 
 function preferito(titolo) {
-  alert(titolo + " aggiunto ai preferiti!");
+  let pref = JSON.parse(localStorage.getItem("preferiti")) || [];
+  if (!pref.includes(titolo)) pref.push(titolo);
+  localStorage.setItem("preferiti", JSON.stringify(pref));
+  alert("Aggiunto ai preferiti!");
 }
 
 function consiglioDelGiorno() {
   const random = database[Math.floor(Math.random() * database.length)];
-  document.getElementById("daily").innerHTML = `
-    <h3>${random.titolo}</h3>
-    <p>${random.descrizione}</p>
-    <p>Rating: ${random.rating}</p>
-  `;
+  document.getElementById("daily").innerHTML = creaCard(random);
 }
 
 consiglioDelGiorno();
@@ -83,27 +85,3 @@ consiglioDelGiorno();
 
 </body>
 </html>
-
-<!-- GUIDA PASSO PASSO
-
-1. Vai su https://github.com
-2. Crea un account
-3. Clicca su "New repository"
-4. Nome: mangomic-site
-5. Carica questo file come index.html
-6. Vai su Settings > Pages
-7. Attiva GitHub Pages (branch main)
-8. Otterrai un link tipo:
-   https://tuonome.github.io/mangomic-site
-
-MODIFICHE SEMPLICI:
-- Cambia database per aggiungere manga
-- Cambia colori nel CSS
-- Aggiungi nuovi generi
-
-PER MIGLIORARE:
-- Usa Firebase per salvare preferiti
-- Aggiungi login utenti
-- Integra API manga (es. Jikan API)
-
--->
